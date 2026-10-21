@@ -103,7 +103,7 @@ partiful-pp-cli guests summary hqWkFzikB1frVdihGKTE
 These capabilities aren't available in any other tool for this API.
 
 ### Host tools
-- **`guests summary`** — See going, maybe, declined and waitlist counts for an event you host, with plus-ones.
+- **`guests summary`**: See going, maybe, declined and waitlist counts for an event you host, with plus-ones.
 
   _Use it when an agent needs headcount for an event without paging the full guest list._
 
@@ -281,8 +281,8 @@ Static request headers can be configured under `headers`; per-command header ove
 - Run the `list` command to see available items
 
 ### API-specific
-- **not signed in / token refresh failed** — Run partiful-pp-cli auth login again with a fresh refresh token from the browser
-- **Missing or insufficient permissions on guests list** — Guest lists are only readable for events you host or cohost
+- **not signed in / token refresh failed**: Run partiful-pp-cli auth login again with a fresh refresh token from the browser
+- **Missing or insufficient permissions on guests list**: Guest lists are only readable for events you host or cohost
 
 ## HTTP Transport
 

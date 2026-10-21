@@ -48,7 +48,7 @@ Use this CLI when an agent needs to read or manage the user's own Partiful event
 These capabilities aren't available in any other tool for this API.
 
 ### Host tools
-- **`guests summary`** — See going, maybe, declined and waitlist counts for an event you host, with plus-ones.
+- **`guests summary`**: See going, maybe, declined and waitlist counts for an event you host, with plus-ones.
 
   _Use it when an agent needs headcount for an event without paging the full guest list._
 
