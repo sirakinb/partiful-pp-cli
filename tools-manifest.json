@@ -1,0 +1,36 @@
+{
+  "api_name": "partiful",
+  "base_url": "https://api.partiful.com",
+  "description": "Create, edit, and inspect your own Partiful events and guest lists from the terminal or an AI agent.",
+  "mcp_ready": "full",
+  "http_transport": "browser-chrome-h2",
+  "auth": {
+    "type": "none"
+  },
+  "required_headers": [],
+  "tools": [
+    {
+      "name": "functions_call",
+      "description": "Call a Partiful callable function by name with a raw JSON body. Required: function, data.",
+      "method": "POST",
+      "path": "/{function}",
+      "no_auth": true,
+      "params": [
+        {
+          "name": "function",
+          "type": "string",
+          "location": "path",
+          "description": "Callable function name, for example getMyRsvps",
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": "object",
+          "location": "body",
+          "description": "Callable payload, for example {'params':{}}",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

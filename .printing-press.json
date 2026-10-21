@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-10-21T17:24:03.404271Z",
+  "printing_press_version": "4.29.0",
+  "api_name": "partiful",
+  "cli_name": "partiful-pp-cli",
+  "spec_path": "partiful-spec.yaml",
+  "run_id": "20261021-010447",
+  "novel_features": [
+    {
+      "name": "RSVP summary",
+      "command": "guests summary",
+      "description": "See going, maybe, declined and waitlist counts for an event you host, with plus-ones."
+    }
+  ]
+}

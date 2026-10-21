@@ -1,0 +1,17 @@
+# Binaries
+/partiful-pp-cli
+/partiful-pp-mcp
+/dist/
+*.mcpb
+
+# Local run evidence (contains live account data such as guest names)
+.manuscripts/
+dogfood-results.json
+workflow-verify-report.json
+apify-actor-audit-report.json
+.printing-press-pii-polish.json
+
+# Credentials: never commit a Partiful session
+session.json
+*.har
+.env
