@@ -120,7 +120,7 @@ Export the people who said yes.
 
 ## Auth Setup
 
-Sign in at partiful.com in your browser, copy your Firebase refresh token with the snippet in the README, and run `partiful-pp-cli auth login`. The token is stored locally with 0600 permissions and exchanged for short-lived ID tokens on demand.
+Sign in at partiful.com in your browser, copy your Firebase refresh token with the steps in "Signing in, step by step" in the README, and run `partiful-pp-cli auth login`. The token is stored locally with 0600 permissions and exchanged for short-lived ID tokens on demand.
 
 Run `partiful-pp-cli doctor` to verify setup.
 

@@ -1,12 +1,75 @@
-# Partiful CLI
+# Partiful CLI and MCP
 
-**Create, edit, and inspect your own Partiful events and guest lists from the terminal or an AI agent.**
+A small tool that lets you, or an AI assistant like Claude, manage your own [Partiful](https://partiful.com) events without clicking through the website.
 
-Partiful has no public API. This CLI uses your own signed-in session to list your events, read details and guest lists, and create or edit events with a preview of every change before it is applied.
+If you host events on Partiful, you probably do the same things over and over: check who's coming, copy last month's event for next month, fix a time or an address. This tool does those for you. You can type a short command, or just ask your AI assistant in plain English.
 
-Unofficial and not affiliated with Partiful. It uses the same private endpoints as the partiful.com web app, which can change without notice. Learn more at [Partiful](https://partiful.com).
+It's unofficial and not made by Partiful.
 
-Created by [@sirakinb](https://github.com/sirakinb) (sirakinb).
+## What it helps with
+
+**Seeing your events at a glance.** List what's coming up, what you're hosting, and what already happened, with dates, locations and how many people said yes.
+
+**Knowing who's coming.** Get the guest list for any event you host, or a quick headcount: how many are going, maybe, or on the waitlist, including plus-ones. You can export the "going" list as a spreadsheet.
+
+**Setting up the next event in a series.** Start a new event from an old one. It keeps the same image, look and description, so you only change the date and title.
+
+**Fixing details.** Change the title, time, description, location, cover image, or whether the event is public.
+
+**Letting an AI assistant help.** Connect it to Claude (or another assistant that supports MCP) and ask things like:
+
+- "Who RSVP'd to Breakfast and Building?"
+- "How many people came to my last three events?"
+- "Draft next month's Breakfast and Building for December 12 at 9am, same as last time."
+- "Move my November event to start at 9:30."
+
+## You stay in control
+
+Nothing on Partiful changes by accident. Anything that would create, edit or publish an event first shows you a preview of exactly what would change, like this:
+
+```
+title:     Breakfast and Building  →  Breakfast and Building 02
+startDate: 9:00 AM                 →  9:30 AM
+```
+
+The change only happens when you confirm it. An AI assistant has to ask for that confirmation too.
+
+## What it can't do
+
+- It can't delete events, message guests, or send invites. Use the Partiful app for those.
+- It only works with events on your own account. It can show guest lists for events you host or co-host, not ones you were invited to.
+- Partiful doesn't offer an official way for apps to connect, so this tool talks to Partiful the same way its website does. If Partiful changes its website, parts of this tool may stop working until it's updated.
+
+## Is it safe?
+
+- It signs in with your own Partiful login, which you copy once from your browser (steps below). There's no password involved, and it never asks for one.
+- Your login is saved only on your computer, in a file that only your user account can open. It's never put in this repo or sent anywhere except Partiful and Google, which runs Partiful's sign-in.
+- You can sign out at any time with `partiful-pp-cli auth logout`.
+
+## Getting started
+
+1. **Install it** (needs [Go](https://go.dev/dl/)):
+
+   ```bash
+   go install github.com/sirakinb/partiful-pp-cli/cmd/partiful-pp-cli@latest
+   go install github.com/sirakinb/partiful-pp-cli/cmd/partiful-pp-mcp@latest
+   ```
+
+2. **Sign in once** by following [Signing in, step by step](#signing-in-step-by-step) below. It takes about a minute.
+
+3. **Try it:**
+
+   ```bash
+   partiful-pp-cli events list
+   ```
+
+To use it with Claude Code, run `claude mcp add partiful -- ~/go/bin/partiful-pp-mcp`. For Claude Desktop, see [Use as an MCP server](#use-as-an-mcp-server).
+
+---
+
+The rest of this page is the technical reference.
+
+Created by [@sirakinb](https://github.com/sirakinb).
 
 ## Setup
 
@@ -31,7 +94,40 @@ partiful-pp-cli doctor
 
 ## Authentication
 
-Sign in at partiful.com in your browser, copy your Firebase refresh token with the snippet in the README, and run `partiful-pp-cli auth login`. The token is stored locally with 0600 permissions and exchanged for short-lived ID tokens on demand.
+Sign in at partiful.com in your browser, copy your Firebase refresh token with the steps in "Signing in, step by step" below, and run `partiful-pp-cli auth login`. The token is stored locally with 0600 permissions and exchanged for short-lived ID tokens on demand.
+
+## Signing in, step by step
+
+Partiful has no API keys. The CLI uses your own signed-in session: the login token that partiful.com keeps in your browser. You copy it once.
+
+1. In Chrome, open partiful.com and sign in.
+2. Open the Console: View > Developer > JavaScript Console (or Cmd+Option+J). If Chrome warns about pasting, type `allow pasting` and press Enter first.
+3. Paste this and press Enter. It loads your token without showing it:
+
+   ```js
+   (async()=>{const db=await new Promise(r=>{const q=indexedDB.open('firebaseLocalStorageDb');q.onsuccess=()=>r(q.result)});const rows=await new Promise(r=>{const q=db.transaction('firebaseLocalStorage').objectStore('firebaseLocalStorage').getAll();q.onsuccess=()=>r(q.result)});window.__pt=rows.map(x=>x.value).find(v=>v&&v.stsTokenManager).stsTokenManager.refreshToken;console.log('ready')})()
+   ```
+
+4. When it prints `ready`, paste this to copy the token to your clipboard:
+
+   ```js
+   copy(window.__pt); delete window.__pt
+   ```
+
+5. In a terminal, save it and clear your clipboard:
+
+   ```bash
+   pbpaste | partiful-pp-cli auth login && printf '' | pbcopy
+   ```
+
+You should see `"signedIn": true`. The token is saved in `~/.config/partiful-pp-cli/session.json`, readable only by your user. To keep it somewhere else, set `PARTIFUL_SESSION_FILE`. To skip the file, set `PARTIFUL_REFRESH_TOKEN` instead.
+
+```bash
+partiful-pp-cli auth status   # am I signed in?
+partiful-pp-cli auth logout   # remove the saved session
+```
+
+If the token stops working (for example after you sign out of Partiful everywhere), repeat these steps. Never commit `session.json`.
 
 ## Writes are previewed
 
