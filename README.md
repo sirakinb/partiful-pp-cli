@@ -14,6 +14,8 @@ It's unofficial and not made by Partiful.
 
 **Setting up the next event in a series.** Start a new event from an old one. It keeps the same image, look and description, so you only change the date and title.
 
+**Filling the photo album.** Add photos to an event's photo album straight from your computer, for example a few favorites from past events so new guests can see what it's like.
+
 **Fixing details.** Change the title, time, description, location, cover image, or whether the event is public.
 
 **Letting an AI assistant help.** Connect it to Claude (or another assistant that supports MCP) and ask things like:
@@ -22,10 +24,11 @@ It's unofficial and not made by Partiful.
 - "How many people came to my last three events?"
 - "Draft next month's Breakfast and Building for December 12 at 9am, same as last time."
 - "Move my November event to start at 9:30."
+- "Add these five photos to the Breakfast and Building album."
 
 ## You stay in control
 
-Nothing on Partiful changes by accident. Anything that would create, edit or publish an event first shows you a preview of exactly what would change, like this:
+Nothing on Partiful changes by accident. Anything that would create, edit or publish an event, or add photos, first shows you a preview of exactly what would change, like this:
 
 ```
 title:     Breakfast and Building  →  Breakfast and Building 02
@@ -297,6 +300,8 @@ Existing installs keep working because the platform-default rung matches the leg
 - **`partiful-pp-cli events publish <id-or-url>`** - Publish a draft (`--apply`)
 - **`partiful-pp-cli guests list <id-or-url>`** - Host guest list (`--status GOING`)
 - **`partiful-pp-cli guests summary <id-or-url>`** - Counts and headcount by RSVP status
+- **`partiful-pp-cli photos list <id-or-url>`** - Photos and videos in an event's photo album
+- **`partiful-pp-cli photos add <id-or-url> <image>...`** - Preview, or with `--apply` upload, photos to the album (adds one activity-feed post that guests can see; `--message` adds a caption)
 - **`partiful-pp-cli auth login|status|logout`** - Manage the saved session
 
 ### functions

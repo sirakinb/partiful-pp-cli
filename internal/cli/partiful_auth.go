@@ -23,6 +23,7 @@ func init() {
 	registerNovelCommand(func(root *cobra.Command, flags *rootFlags) {
 		root.AddCommand(newAuthCmd(flags))
 		root.AddCommand(newEventsCmd(flags))
+		root.AddCommand(newPhotosCmd(flags))
 	})
 	// The generated `functions` escape hatch uses the generated client; give
 	// it a fresh ID token from the saved session when one exists.

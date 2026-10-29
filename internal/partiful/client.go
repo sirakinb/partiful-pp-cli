@@ -176,6 +176,12 @@ func setBrowserHeaders(req *http.Request) {
 }
 
 func (c *Client) do(ctx context.Context, surface, method, rawURL string, body io.Reader, contentType string, authScheme string) ([]byte, error) {
+	return c.doWithHeaders(ctx, surface, method, rawURL, body, contentType, authScheme, nil)
+}
+
+// doWithHeaders is do plus extra request headers (for example x-user-id,
+// which the uploadPhoto endpoint requires).
+func (c *Client) doWithHeaders(ctx context.Context, surface, method, rawURL string, body io.Reader, contentType string, authScheme string, headers map[string]string) ([]byte, error) {
 	tok, err := c.IDToken(ctx)
 	if err != nil {
 		return nil, err
@@ -197,6 +203,9 @@ func (c *Client) do(ctx context.Context, surface, method, rawURL string, body io
 			req.Header.Set("Content-Type", contentType)
 		}
 		req.Header.Set("Authorization", authScheme+" "+tok)
+		for k, v := range headers {
+			req.Header.Set(k, v)
+		}
 		setBrowserHeaders(req)
 		resp, err := c.HTTP.Do(req)
 		if err != nil {
