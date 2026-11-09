@@ -12,6 +12,8 @@ It's unofficial and not made by Partiful.
 
 **Knowing who's coming.** Get the guest list for any event you host, or a quick headcount: how many are going, maybe, or on the waitlist, including plus-ones. You can export the "going" list as a spreadsheet.
 
+**Seeing what guests told you.** If your event asks RSVP questions (like "What is your email address?"), export every guest's answers as a spreadsheet, or get just the email list, for example to add new attendees to your mailing list.
+
 **Setting up the next event in a series.** Start a new event from an old one. It keeps the same image, look and description, so you only change the date and title.
 
 **Filling the photo album.** Add photos to an event's photo album straight from your computer, for example a few favorites from past events so new guests can see what it's like.
@@ -21,6 +23,7 @@ It's unofficial and not made by Partiful.
 **Letting an AI assistant help.** Connect it to Claude (or another assistant that supports MCP) and ask things like:
 
 - "Who RSVP'd to Breakfast and Building?"
+- "Export the questionnaire answers for my last event as a spreadsheet."
 - "How many people came to my last three events?"
 - "Draft next month's Breakfast and Building for December 12 at 9am, same as last time."
 - "Move my November event to start at 9:30."
@@ -300,6 +303,7 @@ Existing installs keep working because the platform-default rung matches the leg
 - **`partiful-pp-cli events publish <id-or-url>`** - Publish a draft (`--apply`)
 - **`partiful-pp-cli guests list <id-or-url>`** - Host guest list (`--status GOING`)
 - **`partiful-pp-cli guests summary <id-or-url>`** - Counts and headcount by RSVP status
+- **`partiful-pp-cli guests responses <id-or-url>`** - Each guest's name, RSVP status and answers to the RSVP questionnaire (`--emails` for just the email addresses, `--answered`, `--status GOING`, `--csv`, `--json`). Answers can include personal data such as emails, so keep exports private.
 - **`partiful-pp-cli photos list <id-or-url>`** - Photos and videos in an event's photo album
 - **`partiful-pp-cli photos add <id-or-url> <image>...`** - Preview, or with `--apply` upload, photos to the album (adds one activity-feed post that guests can see; `--message` adds a caption)
 - **`partiful-pp-cli auth login|status|logout`** - Manage the saved session

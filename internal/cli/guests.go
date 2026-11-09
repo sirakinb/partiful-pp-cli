@@ -18,5 +18,6 @@ func newNovelGuestsCmd(flags *rootFlags) *cobra.Command {
 	}
 	cmd.AddCommand(newNovelGuestsSummaryCmd(flags))
 	cmd.AddCommand(newGuestsListCmd(flags))
+	cmd.AddCommand(newGuestsResponsesCmd(flags))
 	return cmd
 }
