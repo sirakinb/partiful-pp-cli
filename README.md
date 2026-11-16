@@ -14,7 +14,7 @@ It's unofficial and not made by Partiful.
 
 **Seeing what guests told you.** If your event asks RSVP questions (like "What is your email address?"), export every guest's answers as a spreadsheet, or get just the email list, for example to add new attendees to your mailing list.
 
-**Setting up the next event in a series.** Start a new event from an old one. It keeps the same image, look and description, so you only change the date and title.
+**Setting up the next event in a series.** Start a new event from an old one. It keeps the same image, look, description, RSVP questions and co-hosts, so you only change the date and title.
 
 **Filling the photo album.** Add photos to an event's photo album straight from your computer, for example a few favorites from past events so new guests can see what it's like.
 
@@ -144,7 +144,7 @@ partiful-pp-cli events update hqWkFzikB1frVdihGKTE --start "2026-11-14 09:30"   
 partiful-pp-cli events update hqWkFzikB1frVdihGKTE --start "2026-11-14 09:30" --apply   # saves it
 ```
 
-`events create --copy-from <event>` reuses an earlier event's image, theme, description and settings, which suits a recurring series. Times like `"2026-12-12 09:00"` are read in the event's timezone (default `America/New_York`).
+`events create --copy-from <event>` reuses an earlier event's image, theme, description, settings, RSVP questionnaire and co-hosts, which suits a recurring series. Copied co-hosts get a co-host request and are added once they accept; use `--no-cohosts` or `--no-questionnaire` to skip either. Times like `"2026-12-12 09:00"` are read in the event's timezone (default `America/New_York`).
 
 ## Use as an MCP server
 
@@ -301,6 +301,10 @@ Existing installs keep working because the platform-default rung matches the leg
 - **`partiful-pp-cli events create`** - Preview, or with `--apply` create, a new event (`--title --start --end --timezone --description --description-file --location --image --public --copy-from`)
 - **`partiful-pp-cli events update <id-or-url>`** - Field-by-field diff, or with `--apply` save it
 - **`partiful-pp-cli events publish <id-or-url>`** - Publish a draft (`--apply`)
+- **`partiful-pp-cli events cohosts list <id-or-url>`** - Hosts and co-host requests (pending, accepted, declined)
+- **`partiful-pp-cli events cohosts add <id-or-url> <user-id>...`** - Invite co-hosts (`--apply`); each person is notified and is added once they accept
+- **`partiful-pp-cli events questionnaire show <id-or-url>`** - Whether the RSVP questionnaire is on, and its questions
+- **`partiful-pp-cli events questionnaire copy <from> <to>`** - Copy one event's RSVP questions to another (`--apply`)
 - **`partiful-pp-cli guests list <id-or-url>`** - Host guest list (`--status GOING`)
 - **`partiful-pp-cli guests summary <id-or-url>`** - Counts and headcount by RSVP status
 - **`partiful-pp-cli guests responses <id-or-url>`** - Each guest's name, RSVP status and answers to the RSVP questionnaire (`--emails` for just the email addresses, `--answered`, `--status GOING`, `--csv`, `--json`). Answers can include personal data such as emails, so keep exports private.

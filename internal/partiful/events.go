@@ -218,8 +218,12 @@ func FreeformLocation(location string) map[string]any {
 }
 
 // CreateEvent calls createEvent with a full event object and returns the new id.
-func (c *Client) CreateEvent(ctx context.Context, event map[string]any) (string, error) {
-	raw, err := c.Call(ctx, "createEvent", map[string]any{"params": map[string]any{"event": event, "cohostIds": []string{}}})
+// cohostIDs are invited as co-hosts, as partiful.com's create flow does.
+func (c *Client) CreateEvent(ctx context.Context, event map[string]any, cohostIDs []string) (string, error) {
+	if cohostIDs == nil {
+		cohostIDs = []string{}
+	}
+	raw, err := c.Call(ctx, "createEvent", map[string]any{"params": map[string]any{"event": event, "cohostIds": cohostIDs}})
 	if err != nil {
 		return "", err
 	}

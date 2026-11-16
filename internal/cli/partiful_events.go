@@ -25,7 +25,8 @@ func newEventsCmd(flags *rootFlags) *cobra.Command {
 		RunE:  parentNoSubcommandRunE(flags),
 	}
 	cmd.AddCommand(newEventsListCmd(flags), newEventsGetCmd(flags), newEventsCreateCmd(flags),
-		newEventsUpdateCmd(flags), newEventsPublishCmd(flags))
+		newEventsUpdateCmd(flags), newEventsPublishCmd(flags), newEventsCohostsCmd(flags),
+		newEventsQuestionnaireCmd(flags))
 	return cmd
 }
 
@@ -236,14 +237,16 @@ type fieldChange struct {
 func newEventsCreateCmd(flags *rootFlags) *cobra.Command {
 	var in eventInput
 	var copyFrom string
-	var apply bool
+	var apply, noCohosts, noQuestionnaire bool
 	cmd := &cobra.Command{
 		Use:         "create",
 		Short:       "Create a new event (preview by default; --apply to create)",
 		Annotations: map[string]string{"pp:method": "POST"},
 		Long: `Creates an event on your account. Without --apply it only prints the event that
-would be created. --copy-from reuses an earlier event's image, theme, description and
-settings, which is handy for a recurring series; flags override copied values.`,
+would be created. --copy-from reuses an earlier event's image, theme, description,
+settings, RSVP questionnaire and co-hosts, which is handy for a recurring series;
+flags override copied values. Copied co-hosts get a co-host request and are added
+once they accept (skip with --no-cohosts; skip the questionnaire with --no-questionnaire).`,
 		Example: strings.Trim(`
   partiful-pp-cli events create --copy-from hqWkFzikB1frVdihGKTE --title "Breakfast and Building" --start "2026-12-12 09:00" --end "2026-12-12 12:00"
   partiful-pp-cli events create --title "Vibe Code Philly 07" --start "2026-12-05 18:00" --location "Philadelphia, PA" --image ./cover.png --apply`, "\n"),
@@ -272,6 +275,7 @@ settings, which is handy for a recurring series; flags override copied values.`,
 
 			tz := in.timezone
 			event := partiful.NewEventDefaults("America/New_York")
+			var cohostIDs []string
 			if copyFrom != "" {
 				srcID, err := partiful.ParseEventID(copyFrom)
 				if err != nil {
@@ -284,6 +288,27 @@ settings, which is handy for a recurring series; flags override copied values.`,
 				for _, k := range partiful.TemplateFields {
 					if v, ok := doc.Fields[k]; ok && v != nil {
 						event[k] = v
+					}
+				}
+				if !noQuestionnaire {
+					if qs := partiful.LatestQuestions(doc); len(qs) > 0 {
+						questions := make([]any, 0, len(qs))
+						for _, q := range qs {
+							questions = append(questions, q)
+						}
+						event["questionnaireVersions"] = []any{map[string]any{"questions": questions, "createdAt": time.Now().UTC()}}
+						event["questionnaireEnabled"] = true
+					}
+				}
+				if !noCohosts {
+					uid, err := pc.UserID(ctx)
+					if err != nil {
+						return partifulErr(err)
+					}
+					for _, o := range partiful.OwnerIDs(doc) {
+						if o != uid {
+							cohostIDs = append(cohostIDs, o)
+						}
 					}
 				}
 			}
@@ -302,6 +327,20 @@ settings, which is handy for a recurring series; flags override copied values.`,
 			}
 
 			preview := map[string]any{"action": "create", "event": displayEvent(event), "applied": false}
+			if vs, ok := event["questionnaireVersions"].([]any); ok && len(vs) > 0 {
+				qs, _ := vs[0].(map[string]any)["questions"].([]any)
+				texts := make([]any, 0, len(qs))
+				for _, q := range qs {
+					if m, ok := q.(map[string]any); ok {
+						texts = append(texts, m["text"])
+					}
+				}
+				preview["questionnaire"] = texts
+				delete(preview["event"].(map[string]any), "questionnaireVersions")
+			}
+			if len(cohostIDs) > 0 {
+				preview["cohostInvites"] = cohostIDs
+			}
 			if in.location != "" {
 				preview["location"] = in.location
 			}
@@ -321,7 +360,7 @@ settings, which is handy for a recurring series; flags override copied values.`,
 				}
 				event["image"] = obj
 			}
-			id, err := pc.CreateEvent(ctx, jsonSafe(event))
+			id, err := pc.CreateEvent(ctx, jsonSafe(event), cohostIDs)
 			if err != nil {
 				return partifulErr(err)
 			}
@@ -338,7 +377,9 @@ settings, which is handy for a recurring series; flags override copied values.`,
 		},
 	}
 	in.register(cmd)
-	cmd.Flags().StringVar(&copyFrom, "copy-from", "", "Event id or URL to copy image, theme, description and settings from")
+	cmd.Flags().StringVar(&copyFrom, "copy-from", "", "Event id or URL to copy image, theme, description, settings, questionnaire and co-hosts from")
+	cmd.Flags().BoolVar(&noCohosts, "no-cohosts", false, "With --copy-from, don't invite the source event's co-hosts")
+	cmd.Flags().BoolVar(&noQuestionnaire, "no-questionnaire", false, "With --copy-from, don't copy the RSVP questionnaire")
 	cmd.Flags().BoolVar(&apply, "apply", false, "Actually create the event (default is a preview)")
 	return cmd
 }
